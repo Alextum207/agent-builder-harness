@@ -1,0 +1,13 @@
+Quelle: test
+URL: https://example.org/job/1
+Firma: Beispiel Analytics GmbH
+Titel: Werkstudent Process Mining (m/w/d)
+Ort: München
+
+<anzeige>
+Die Beispiel Analytics GmbH analysiert Geschäftsprozesse mit Process Mining für Mittelständler.
+Aufgaben: Analyse von Event Logs, Aufbau von Dashboards, Automatisierung mit Python.
+Profil: Studium der Wirtschaftsinformatik, erste Erfahrung mit SQL.
+16 Stunden pro Woche, mindestens 6 Monate, 15 € pro Stunde. Kündigungsfrist von 2 Wochen.
+Bewerbung an jobs@beispiel-analytics.example
+</anzeige>

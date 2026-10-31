@@ -1,0 +1,16 @@
+# Secrets und Laufzeitdaten
+.env
+.secrets/
+logs/
+workspace/
+
+# Persönliche Daten des Werkstudent-Agents
+werkstudent-agent/context/
+
+# Fremde Skills im Original (Quellen: build-agent/references/sources.md)
+setup-entwurf/_quellen/
+
+# Python
+.venv/
+__pycache__/
+*.pyc

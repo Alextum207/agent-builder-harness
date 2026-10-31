@@ -1,0 +1,22 @@
+{"id": "filter-werkstudent-muenchen", "type": "filter", "input": {"titel": "Werkstudent Data Science (m/w/d)", "ort": "München"}, "expect": true, "critical": true}
+{"id": "filter-praktikum", "type": "filter", "input": {"titel": "Praktikum Process Mining", "ort": "München"}, "expect": false, "critical": true}
+{"id": "filter-stuttgart", "type": "filter", "input": {"titel": "Werkstudent AI", "ort": "Stuttgart"}, "expect": false, "critical": true}
+{"id": "filter-muenchen-stuttgart", "type": "filter", "input": {"titel": "Werkstudent AI", "ort": "München, Stuttgart"}, "expect": false, "critical": true}
+{"id": "filter-berlin", "type": "filter", "input": {"titel": "Working Student AI", "ort": "Berlin"}, "expect": false, "critical": true}
+{"id": "filter-thesis", "type": "filter", "input": {"titel": "Werkstudent / Masterarbeit Data", "ort": "Garching"}, "expect": false, "critical": false}
+{"id": "felder-alle", "type": "felder", "input": "16 Stunden pro Woche, mindestens 6 Monate, 15 € pro Stunde. Kündigungsfrist von 2 Wochen. Mail: jobs@x.example", "expect": {"stunden": "16 Stunden pro Woche", "mindestlaufzeit": "mindestens 6 Monate", "lohn": "15 € pro Stunde", "kuendigungsfrist": "Kündigungsfrist von 2 Wochen", "kontakt_email": "jobs@x.example"}, "critical": true}
+{"id": "felder-leer", "type": "felder", "input": "Spannende Aufgaben in einem tollen Team.", "expect": {"stunden": "nicht angegeben", "lohn": "nicht angegeben", "mindestlaufzeit": "nicht angegeben", "kuendigungsfrist": "nicht angegeben", "kontakt_email": "nicht angegeben"}, "critical": true}
+{"id": "letter-sauber", "type": "letter", "replace": [], "expect": "ok", "critical": true}
+{"id": "letter-erfundene-zahl", "type": "letter", "replace": [["pro Video eine Stunde spart", "pro Video 3 Stunden spart"]], "expect": "Zahl ohne Beleg: 3", "critical": true}
+{"id": "letter-erfundenes-tool", "type": "letter", "replace": [["Automatisierung mit Python verbinden", "Automatisierung mit Python und Spark verbinden"]], "expect": "Begriff ohne Beleg: spark", "critical": true}
+{"id": "letter-erfundene-firma", "type": "letter", "replace": [["Diese Haltung kommt aus eigener Erfahrung.", "Diese Haltung kommt aus meiner Zeit bei Siemens."]], "expect": "Name ohne Beleg: Siemens", "critical": true}
+{"id": "letter-cv-kopie", "type": "letter", "replace": [["Diese Haltung kommt aus eigener Erfahrung.", "Ich habe einen automatisierten Web-Crawler mit Python, Playwright und Claude API entwickelt, der Online-Shops und deren Unterseiten auf manipulatives Design durchsucht. Außerdem habe ich einen KI-Telefonassistenten mit Twilio, Google Gemini und WebSockets entwickelt, der Kundenanrufe durchführt, um Leads zu qualifizieren."]], "expect": "Zu nah am Lebenslauf", "critical": true}
+{"id": "letter-du-form", "type": "letter", "replace": [["Bei Ihnen reizt mich", "Bei euch reizt mich"]], "expect": "Du-Form", "critical": true}
+{"id": "letter-fremde-adresse", "type": "letter", "replace": [["AN: jobs@beispiel-analytics.example", "AN: bewerbung@beispiel-analytics.example"]], "expect": "E-Mail-Adresse steht nicht", "critical": true}
+{"id": "letter-falsche-beleg-id", "type": "letter", "replace": [["BELEGE: M2, P3, P4, P8", "BELEGE: M2, P99"]], "expect": "Beleg-ID existiert nicht: P99", "critical": true}
+{"id": "letter-betreff-wort", "type": "letter", "replace": [["BETREFF: Bewerbung", "BETREFF: Betreff: Bewerbung"]], "expect": "Betreffzeile", "critical": false}
+{"id": "letter-zu-viele-stationen", "type": "letter", "replace": [["Über die Einladung", "Neben Thales, Tennistrainer und Getränkewart habe ich viel gelernt. Über die Einladung"]], "expect": "Zu viele Stationen", "critical": false}
+{"id": "gmail-send-ohne-confirm", "type": "gmail", "action": "send", "confirm": "andere-id", "expect": "keine_wirkung", "critical": true}
+{"id": "gmail-draft-check-rot", "type": "gmail", "action": "draft_bad", "expect": "keine_wirkung", "critical": true}
+{"id": "gmail-draft-sauber", "type": "gmail", "action": "draft_ok", "expect": "entwurf", "critical": true}
+{"id": "log-maskiert", "type": "mask", "input": "Kontakt: jobs@beispiel-analytics.example", "expect": "jobs@beispiel-analytics.example", "critical": true}

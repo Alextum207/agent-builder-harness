@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "ask": [
+      "Bash(*gmail.py*)",
+      "PowerShell(*gmail.py*)"
+    ],
+    "deny": [
+      "Read(.secrets/**)",
+      "Edit(.secrets/**)"
+    ]
+  }
+}
