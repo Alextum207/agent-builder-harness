@@ -26,7 +26,7 @@
 ```
 **Fehler:** gleiches Format mit `status: "error"` plus `error_type` und `fix_hint` mit einem korrekten Beispielaufruf. Keine Tracebacks, keine nackten Fehlercodes (Quelle: A2, F9).
 
-**Große Ausgaben:** kürzen, mit Hinweis wie weiter eingrenzen/paginieren (`"summary": "50 von 812 Treffern, nutze filter=..."`).
+**Große Ausgaben:** kürzen, mit Hinweis wie weiter eingrenzen/paginieren (`"summary": "50 von 812 Treffern, nutze filter=..."`). Bei Tools mit großen Antworten ein Feld `response_format: Literal["knapp", "ausführlich"]` (Standard knapp); sehr große Ergebnisse nach `workspace/` schreiben und nur Pfad plus Kurzfassung zurückgeben (context.md).
 
 **Retries:** max. 3, nur bei vorübergehenden Fehlern (Netzwerk, Rate-Limit, 5xx). Bei Auth- oder Validierungsfehlern sofort abbrechen.
 

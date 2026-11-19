@@ -70,6 +70,10 @@ uv run python evals/run_evals.py 3
 
 Der Eval-Lauf ruft die Anthropic-API auf. Lokal geht es mit Ollama über `MODEL=ollama:granite4.1:8b`.
 
+## Roadmap
+
+Offene Arbeiten stehen als [GitHub-Issues](https://github.com/Alextum207/agent-builder-harness/issues), sortiert nach Labels `prio:P1` (jetzt), `prio:P2` (beim ersten echten Firmenprozess) und `prio:P3` (ab mehreren Agenten). Grundlage ist der Abgleich mit Anthropic, OpenAI, Google ADK, LangChain, SAP und der Celonis-Fallstudie, siehe [`sources.md`](setup-entwurf/build-agent/references/sources.md).
+
 ## Nicht im Repo
 
 - **Persönliche Daten:** `werkstudent-agent/context/` mit Profil, Lebenslauf und Firmenliste. Ohne `context/profil.md` laufen dessen Anschreiben-Prüfung und Evals nicht.

@@ -9,8 +9,25 @@ Maximal drei Fragen, nur was noch unbekannt ist:
 Immer mitklären (kann in Frage 2 oder 3 stecken):
 - **Personenbezogene Daten?** (Namen, E-Mails, Telefonnummern von Leads/Kunden) → ja: siehe security.md „DSGVO“; bei Kundenprojekten fragen, ob ein AVV mit dem LLM-Anbieter besteht.
 - **Betrieb:** nur lokal oder dauerhaft für einen Kunden (Webhook, Zeitplan)? → dauerhaft: Phase Deploy einplanen.
+- **Datenlage:** Sind die Eingabedaten zugänglich, vollständig und konsistent (Stichprobe von 5–10 echten oder realistischen Fällen ansehen)? Fehlende oder widersprüchliche Daten zuerst klären; daran scheitern die meisten Piloten, nicht am Modell (Quelle: SAP1).
+- **Laufart:** kurz, lang oder mehrtägig? → `run_length` (context.md).
+- **Autonomie:** Wie viel darf der Agent allein? → `autonomy_level` (unten).
 
 Danach: Kontext-Tag festlegen und im Projekt in `config.md` notieren.
+
+### Autonomie-Stufe
+`autonomy_level` in `config.md`, Standard `vorschlagen` (Quelle: SAP1, OAI2):
+
+| Stufe | Agent | Mensch |
+|---|---|---|
+| `beobachten` | schlägt nur vor, schreibt nichts | handelt selbst |
+| `vorschlagen` | bereitet vor, jede schreibende Aktion wartet auf Freigabe | gibt frei |
+| `ausführen` | reversible Aktionen allein, mit Log | prüft im Nachgang Stichproben |
+| `autonom` | alles außer `IRREVERSIBLE` allein | nur Grenzfälle und Stichproben |
+
+- Irreversible Aktionen brauchen auf jeder Stufe Freigabe (security.md).
+- Hochstufen nur mit Eval- oder Backtest-Zahlen, nie auf Verdacht. Die Stufe gilt pro Prozess, nicht pro Agent-Plattform.
+- Die Stufe wird im Code durchgesetzt (welche Tools in die Freigabeliste kommen), nicht im Prompt.
 
 ## 2 Muster wählen
 Die einfachste Zeile, die passt, gewinnt (Quelle: A1):
@@ -19,6 +36,7 @@ Die einfachste Zeile, die passt, gewinnt (Quelle: A1):
 |---|---|---|
 | Ein Aufruf mit Retrieval/Beispielen reicht | **Kein Agent** | einzelner Call, Skill hier beenden |
 | Feste Schritte nacheinander | Prompt Chaining | `StateGraph`, lineare Nodes, Code-Checks zwischen Nodes |
+| Schritte pro Fall verschieden, aber vor der Ausführung prüfbar; hohe Tragweite | Plan-then-Execute | Planer-Node erzeugt Plan als Pydantic-Liste → Code prüft (nur erlaubte Schritte) → `interrupt()` zur Freigabe → Ausführung Schritt für Schritt ohne LLM-Entscheidung |
 | Eingaben fallen in klare Kategorien | Routing | Klassifizier-Node (kleines Modell) + `add_conditional_edges` |
 | Unabhängige Teilaufgaben | Parallelisierung | parallele Kanten / `Send`; Voting = gleiche Aufgabe mehrfach |
 | Teilaufgaben erst zur Laufzeit bekannt | Orchestrator-Worker | Planer-Node + `Send` an Worker-Nodes |
@@ -29,6 +47,9 @@ Regeln:
 - **Workflow vor Agent:** Wenn sich der Ablauf als Graph aufschreiben lässt, ist es ein Workflow (Quelle: A1, F8 „own your control flow“).
 - **Kleine Agents:** Ein Agent pro klar umrissener Aufgabe; große Aufgaben als Workflow aus kleinen Agents (Quelle: F10).
 - **Parallel, wo unabhängig:** Unabhängige Tool-Aufrufe oder Nodes parallel ausführen; Claude ruft Tools ohnehin parallel auf.
+- **Fehler multiplizieren sich:** Fünf Schritte mit je 95 % ergeben zusammen ≈ 77 %. Jeder zusätzliche LLM-Schritt muss sich messbar lohnen; zwischen Schritten Schema-Checks im Code (Quelle: SAP1).
+- **Plan statt Schleife:** Bei hoher Tragweite lieber Plan-then-Execute als ReAct. Der Zufall bleibt im Plan, den ein Mensch sieht; die Ausführung ist deterministisch.
+- **Kritiker vorsichtig:** Evaluator-Optimizer kann richtige Antworten „verschlimmbessern“. Nur einsetzen, wenn ein Eval zeigt, dass die zweite Runde besser ist.
 - **Unsicherheit statt Erfinden:** Bei Wissens-Agents einen Ausgang „unzureichende/widersprüchliche Quellen → Mensch fragen“ vorsehen.
 
 Ergebnis: gewähltes Muster + ein Satz Begründung in `config.md`.

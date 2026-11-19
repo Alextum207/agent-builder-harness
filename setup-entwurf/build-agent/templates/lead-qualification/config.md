@@ -8,6 +8,8 @@ log_retention_days: 30
 personal_data: ja    # Lead-E-Mails
 kontext: lead-qualification
 muster: ReAct-Agent – ob ein Firmen-Lookup und eine Follow-up-Mail nötig sind, hängt vom Lead ab
+run_length: kurz
+autonomy_level: vorschlagen  # mail_send wartet auf Freigabe
 ---
 # Rolle
 Du qualifizierst eingehende B2B-Leads für <ANBIETER>, Anbieter von <ANGEBOT>.

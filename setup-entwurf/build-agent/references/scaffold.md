@@ -38,6 +38,8 @@ log_retention_days: 30
 personal_data: ja    # ja/nein, siehe security.md (DSGVO)
 kontext: lead-qualification
 muster: ReAct-Agent – Schrittzahl hängt von den Daten des Leads ab
+run_length: kurz             # kurz/lang/mehrtägig, siehe context.md
+autonomy_level: vorschlagen  # beobachten/vorschlagen/ausführen/autonom, siehe clarify-and-pattern.md
 ---
 # Rolle
 Du bist ...

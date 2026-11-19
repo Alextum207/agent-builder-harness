@@ -22,7 +22,7 @@ Checkliste kopieren und abhaken:
 - [ ] 1 Klären            → references/clarify-and-pattern.md
 - [ ] 2 Muster wählen     → references/clarify-and-pattern.md
 - [ ] 3 Scaffold          → references/scaffold.md
-- [ ] 4 Tools             → references/tools.md (+ references/mcp.md, falls ein MCP-Server entsteht)
+- [ ] 4 Tools & Kontext   → references/tools.md, references/context.md (+ references/mcp.md, falls ein MCP-Server entsteht)
 - [ ] 5 Sicherheit        → references/security.md
 - [ ] 6 Evals definieren  → references/evals.md   (vor jedem Prompt-Tuning)
 - [ ] 7 Kosten & Caching  → references/cost-and-caching.md

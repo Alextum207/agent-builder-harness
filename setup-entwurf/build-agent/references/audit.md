@@ -57,6 +57,9 @@
 - Fremdinhalte als Daten markiert; Prüf-Gate aus security.md
 - Bei RAG: Zitate mit Quelle
 - Cache-Reihenfolge statisch → dynamisch
+- `run_length` passt zum echten Lauf (Schritte und Tokens im Log); bei `lang` Verdichtung vorhanden, bei `kurz` keine unnötige Middleware (context.md)
+- Keine rohen Großausgaben im Verlauf; Artefakte (Pfade, IDs) im State statt nur in einer Zusammenfassung
+- `autonomy_level` gesetzt und im Code durchgesetzt (Freigabeliste passt zur Stufe)
 
 ## Fix-Reihenfolge (Code vor Prompt)
 1. Tool-Pflichten und Freigaben im Code erzwingen.
