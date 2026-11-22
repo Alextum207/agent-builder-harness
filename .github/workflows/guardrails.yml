@@ -1,0 +1,23 @@
+# Issue #7/#9: Änderungen am zentralen Guardrails-Paket nur per PR; CI misst Precision/Recall und den Selbsttest.
+# Branch-Schutz (PR-Pflicht, dieser Check als Pflicht-Status) wird in den GitHub-Einstellungen von main gesetzt.
+name: guardrails
+on:
+  pull_request:
+    paths: ["packages/agent-guardrails/**", "test-*/agent.py", "test-*/config.md", ".github/workflows/guardrails.yml"]
+  push:
+    branches: [main]
+    paths: ["packages/agent-guardrails/**", "test-*/agent.py", "test-*/config.md", ".github/workflows/guardrails.yml"]
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/agent-guardrails
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+      - run: uv sync
+      - run: uv run python test_guardrails.py
+      - run: uv run python evals/run_guardrail_evals.py --ci

@@ -41,6 +41,7 @@ Die einfachste Zeile, die passt, gewinnt (Quelle: A1):
 | Unabhängige Teilaufgaben | Parallelisierung | parallele Kanten / `Send`; Voting = gleiche Aufgabe mehrfach |
 | Teilaufgaben erst zur Laufzeit bekannt | Orchestrator-Worker | Planer-Node + `Send` an Worker-Nodes |
 | Klare Qualitätskriterien, Feedback hilft messbar | Evaluator-Optimizer | Generator-Node ↔ Kritiker-Node, max. 3 Runden |
+| Fragen an Firmenwissen; ob und wie oft gesucht wird, hängt von der Frage ab | Agentic / Adaptive RAG | Router-Node (ohne Suche / eine / mehrstufig) → Retrieval-Node (Code) → Prüf-Node (reicht? Widerspruch?) → Nachsuchen bis `max_suchen` → Antwort mit Zitaten → Code prüft Zitate; Ausgang „Mensch“ |
 | Offene Aufgabe, Schrittzahl unbekannt | ReAct-Agent | `create_agent` mit Tools und Middleware |
 
 Regeln:
@@ -51,5 +52,13 @@ Regeln:
 - **Plan statt Schleife:** Bei hoher Tragweite lieber Plan-then-Execute als ReAct. Der Zufall bleibt im Plan, den ein Mensch sieht; die Ausführung ist deterministisch.
 - **Kritiker vorsichtig:** Evaluator-Optimizer kann richtige Antworten „verschlimmbessern“. Nur einsetzen, wenn ein Eval zeigt, dass die zweite Runde besser ist.
 - **Unsicherheit statt Erfinden:** Bei Wissens-Agents einen Ausgang „unzureichende/widersprüchliche Quellen → Mensch fragen“ vorsehen.
+
+### Agentic / Adaptive RAG (Quelle: SAP1)
+Referenz: `test-rag-agent/rag.py` über ein OKF-Bundle aus `company-brain/ingest.py`.
+- **Adaptive:** Ein Router (kleines Modell, strukturierte Ausgabe) wählt `ohne_suche | eine_suche | mehrstufig` und liefert Suchbegriffe. Das Limit pro Modus steht in `config.md` (`max_suchen: {ohne_suche: 0, eine_suche: 2, mehrstufig: 3}`) und wird in der Kante nach dem Prüf-Node erzwungen, nicht im Prompt.
+- **Agentic:** Der Prüf-Node bewertet `ausreichend`, `widerspruch` und liefert bessere Suchbegriffe; nachgesucht wird nur bis zum Limit.
+- **Ausgang Mensch im Code:** Widerspruch → Mensch; nach dem Limit nicht ausreichend → Mensch; Zitate, die nicht zu abgerufenen Auszügen gehören → Mensch.
+- Retrieval ist Code (Keyword-Suche über Abschnitte, Titel und `stand` aus dem OKF-Kopf). Embeddings erst, wenn die Keyword-Suche messbar zu wenig findet (Context Precision im Report).
+- Auszüge gehen als `<auszug id=… dokument=… stand=…>` ins Modell; Auszüge mit Injection-Markern bekommen den Taint-Hinweis aus dem Guardrails-Paket.
 
 Ergebnis: gewähltes Muster + ein Satz Begründung in `config.md`.

@@ -4,6 +4,7 @@
 - Grundsätze
 - Indirect Prompt Injection
 - Rechte minimieren
+- Zentrales Guardrails-Paket und Identität
 - Freigaben
 - Secrets, Dateien, Ausgaben
 - DSGVO
@@ -27,6 +28,24 @@ Versteckte Anweisungen in Dokumenten, Webseiten oder E-Mails dürfen den Agent n
 - Downstream-Rechte minimal (read-only DB-Rolle, OAuth-Scopes des Nutzers).
 - Berechtigung im Zielsystem durchsetzen, nicht der Entscheidung des LLM überlassen.
 - Rate-Limits auf schreibende Aktionen; alle Aktionen loggen.
+
+## Zentrales Guardrails-Paket und Identität (Quelle: OAI2, AWS1)
+Jeder Agent bindet `packages/agent-guardrails` als Pfad-Abhängigkeit ein (`[tool.uv.sources] agent-guardrails = { path = "../packages/agent-guardrails", editable = true }`) und nennt die Version in `config.md` (`guardrails: agent-guardrails 0.3.0`). Regeln stehen versioniert in `policy.json`; Änderungen nur per PR, CI (`.github/workflows/guardrails.yml`) misst Precision/Recall.
+```python
+import agent_guardrails as ag
+POLICY, IDENTITY = ag.load_policy(), ag.Identity.from_config(CFG)
+middleware=[..., HumanInTheLoopMiddleware(interrupt_on={n: ... for n in POLICY.approval_required_tools}),
+            ag.GuardrailMiddleware(POLICY),                       # Injection-Marker → Lauf „tainted“, Freigabe-Tools gesperrt; Rate-Limit
+            ag.PermissionMiddleware(IDENTITY, TOOL_SCOPES)]       # Tool → (System, read|write); unbekanntes Tool = verboten
+```
+- **Eigene Identität pro Agent** in `config.md`: `identity: {agent_id, permissions: {erp: [read]}}`. `autonomy_level: beobachten` sperrt jedes Schreiben, auch mit Schreibrecht.
+- **Zwei Linien:** Middleware prüft die Rechte; das Zielsystem setzt sie zusätzlich selbst durch (DB ohne Schreibrecht `mode=ro` öffnen, read-only-Rolle, OAuth-Scope). Fällt eine Linie aus, hält die andere.
+- **Taint statt Prompt:** Erkennt das Paket Injection-Marker in Eingabe oder Tool-Ergebnis, markiert es den Inhalt als Daten und sperrt für den Rest des Laufs alle Tools der Freigabeliste. Semantische Angriffe ohne Marker erkennt Regex nicht (gemessen, siehe evals.md „Guardrail-Evals“); dagegen helfen nur Rechte und Freigaben.
+- **Parallele Tool-Aufrufe:** `request.state` ist der Stand vor dem Batch. Ein Taint aus einem parallelen Aufruf sieht ein freigabepflichtiges Tool im selben Schritt nicht. Deshalb laufen Tools der Freigabeliste nur allein in einem eigenen Schritt (`guardrail_batch`). State-Felder, die Middleware setzt, brauchen Reducer (`Annotated[bool, operator.or_]`), sonst bricht der Lauf bei zwei parallelen Ergebnissen ab. Das Rate-Limit zählt Tool-Calls bis zur eigenen Position, nicht die Tool-Ergebnisse.
+- Eigene Wrapper-Tags (`<lead_email>`) entfernt das Paket vor dem Scan, sonst ist jeder Lauf „tainted“. Tags, die Angreifer in den Text einbauen, werden weiter erkannt.
+- Im Betrieb: Service-Account bzw. OAuth-Client pro Agent statt geteilter Schlüssel; Secrets aus dem Secret-Store, nie in `config.md`. Für MCP-Tools ein Gateway, das dieselbe `TOOL_SCOPES`-Liste prüft.
+- Logs nur feldweise maskieren (`POLICY.mask(text)`), nie das fertige JSON: ein Telefon-Muster traf Zeitstempel und zerstörte die Log-Zeilen.
+Referenz: `test-finance-agent/` (Identität, Rechte, Taint), `packages/agent-guardrails/test_guardrails.py`, `evals/check_consumers.py` (eine Policy-Änderung wirkt in allen Agenten).
 
 ## Freigaben
 | Risiko | Freigabe |

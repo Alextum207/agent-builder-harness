@@ -8,6 +8,7 @@
 - Grader
 - LLM-Judge
 - RAG-Metriken
+- Guardrail-Evals
 - Zuverlässigkeit und Report
 - Runner
 
@@ -31,9 +32,14 @@ Fehler multiplizieren sich: fünf Schritte mit je 95 % ergeben ≈ 77 % für die
 - Jeder LLM-Node bekommt eigene Fälle (Eingabe des Nodes → erwartete Ausgabe des Nodes), nicht nur die ganze Kette.
 - Im Report Trefferquote pro Node plus Ende-zu-Ende. Liegt die Kette deutlich unter dem Produkt der Nodes, stimmt ein Vertrag zwischen den Nodes nicht.
 - Bei Plan-then-Execute: Plan-Qualität getrennt von der Ausführung bewerten.
+- Fall-Format mit `node`: `{"id": …, "node": "extrahieren" | "kontieren" | "e2e", "input": {…State…}, "expect": {…}}`. Der Runner ruft die Node-Funktion direkt mit ihrer Eingabe auf; Sollwerte kommen aus den Testdaten, nicht aus der Falldatei.
+Referenz: `test-finance-agent/workflow.py` + `evals/run_node_evals.py` (zwei LLM-Nodes, Code-Checks dazwischen, Report mit Node-Quoten, Produkt und Kette).
 
 ## Kontext-Fälle (nur `run_length: lang/mehrtägig`)
-Aus dem Prüf-Gate in context.md: Token-Druck, vergifteter Kontext, Artefakt-Liste. Zusätzlich im Report: Tokens pro erfolgreicher Aufgabe und Anzahl erneuter Abrufe derselben Daten.
+Aus dem Prüf-Gate in context.md: Token-Druck, vergifteter Kontext, Artefakt-Liste. Zusätzlich im Report: Tokens pro erfolgreicher Aufgabe und Anzahl erneuter Abrufe derselben Daten (gleiches Tool mit gleichen Argumenten im Log).
+- Jeden Kontext-Fall mit beiden Verdichtungen laufen lassen (`compaction_mode: clear | summarize`), so zeigt der Report, ob die billigere Stufe reicht.
+- Greift die Verdichtung im Lauf nicht, ist der Fall **ungültig**, nicht bestanden.
+Referenz: `test-finance-agent/evals/run_evals.py`.
 
 ## Grader
 | Typ | Wofür |
@@ -59,6 +65,20 @@ Antworte als JSON: {"reasoning": "<2-4 Sätze>", "score": <1-4>}
 - **Faithfulness:** Jede Aussage der Antwort ist durch die abgerufenen Chunks gedeckt (Judge prüft Aussage für Aussage).
 - **Context Precision:** Anteil der abgerufenen Chunks, die tatsächlich relevant sind.
 - **Zitate:** Jede Faktenaussage trägt einen Anker auf Datei/Seite; Code-Grader prüft, dass zitierte Quellen existieren.
+- **Context Precision per Code**, wenn jeder Fall seine relevanten Dokumente nennt (`"relevant": ["bewirtung"]`): Anteil abgerufener Auszüge aus diesen Dokumenten. Kein Judge nötig.
+- **Suchen pro Frage** und **Router-Modus** pro Fall im Report. Pflichtfälle: abgelöstes Dokument, Widerspruch → Mensch, fehlende Info → Mensch, Injection im Dokument.
+Referenz: `test-rag-agent/evals/run_evals.py`.
+
+## Guardrail-Evals (Quelle: OAI2)
+Guardrails messen statt nur haben:
+- Gelabelte Fälle `{"guardrail": "injection" | "pii", "label": true|false, "text": …}` mit derselben `policy.json` wie im Betrieb; dazu harmlose Texte mit Reizwörtern („ignorieren Sie meine letzte Mail“) und schwere Angriffe (verschleiert, semantisch, englisch).
+- Report: Precision, Recall, F1 pro Guardrail und die Liste der Fehlklassifikationen als bekannte Lücken. CI bricht ab, wenn eine Schwelle unterschritten wird (`--ci`).
+- Red-Teaming über den echten Einstiegspunkt: Promptfoo (MIT) mit Python-Provider, der `agent.run()` aufruft und die **Wirkung** zurückgibt (Stufe, vorgeschlagene Mails, Outbox), nicht nur den Text. Offline mit handgeschriebenen Angriffen; `redteam generate` schickt Daten an die Promptfoo-Cloud. Telemetrie aus (`PROMPTFOO_DISABLE_TELEMETRY=1`).
+- Gefundene Lücken als Fälle in `evals/cases.jsonl` des Agenten.
+Referenz: `packages/agent-guardrails/evals/run_guardrail_evals.py`, `test-lead-agent/evals/redteam/`.
+
+## Ohne API-Key
+`MODEL=claude-cli:haiku` nutzt `agent_guardrails.claude_cli.chat_model` über `claude -p` (Abo). Immer mit `--system-prompt` (sonst schickt die CLI ihren eigenen Prompt mit, rund 1,50 $ pro Aufruf statt 0,004 $) und ohne Shell aufrufen (cmd.exe zerlegt mehrzeilige Argumente). Tools laufen über ein Text-Protokoll; im Report „über CLI“ vermerken. Kosten laut CLI: `CLAUDE_CLI_COST_LOG=<datei.jsonl>`.
 
 ## Zuverlässigkeit und Report
 - Während der Entwicklung: k = 1 pro Fall (billig, schnelles Feedback).
