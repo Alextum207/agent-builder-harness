@@ -12,6 +12,7 @@ Zwei Ebenen in einem Repo:
 |---|---|
 | `setup-entwurf/build-agent/` | Skill-Entwurf: Ablauf, Referenzen, Ledger, Inbox. Installiert wird erst nach Freigabe. |
 | `packages/agent-guardrails/` | Policy, Identität und Rechte, Tracing mit Event-Log-Export, Chatmodell über die Claude-CLI |
+| `packages/mail-connector/` | Postfach (.eml oder IMAP, read-only) → OCEL 2.0 JSON, pseudonymisiert, verknüpft mit Rechnung und Kreditor |
 | `company-brain/` | Dokumente → OKF-v0.3-Bundle (Docling, markitdown) |
 | `test-finance-agent/` | Synthetisches ERP (SQLite, P2P-Event-Log), Recherche-Agent, Workflow, Memory, Mehrtages-Scaffold |
 | `test-rag-agent/`, `test-lead-agent/` | RAG über das Brain; Lead-Agent mit Red-Teaming |
@@ -29,6 +30,7 @@ cd packages/agent-guardrails && uv run python test_guardrails.py && uv run pytho
 cd test-finance-agent && uv run python test_memory.py
 cd test-rag-agent && uv run python test_search.py
 cd company-brain && uv run python test_ingest.py
+cd packages/mail-connector && uv run python test_mail_ocel.py
 ```
 Modell-Evals: Es gibt keinen gültigen API-Key. Läufe gehen über die Claude-Code-CLI mit `MODEL=claude-cli:haiku` (claude-haiku-5-5), lokale Modelle nicht verwenden. Beispiel: `MODEL=claude-cli:haiku uv run python evals/run_evals.py 3`.
 

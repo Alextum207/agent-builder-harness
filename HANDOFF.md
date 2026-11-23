@@ -31,7 +31,7 @@ Belege: Retros in `test-finance-agent/`, `test-rag-agent/`, `test-lead-agent/`; 
 | WP4 | Kandidaten-Score im Code: Menge × Gleichförmigkeit × geringes Risiko, Top 3 mit Begründung | Code-Test auf den Testdaten; LLM nur für Formulierungen |
 | WP5 | Für den Top-Kandidaten einen Agenten mit `build-agent` bauen (Muster, Evals, Guardrails, Rechte) | Evals mit k=3 grün, RETRO.md |
 | WP6 | Backtest: Agent auf historischen Fällen gegen menschliche Entscheidungen; Abdeckung, Fehlerquote, obere Schranke | Report mit Schranke; Agent nur auf dem Anteil autonom, den der Backtest deckt |
-| WP7 | Konnektor Test-Postfach (IMAP gegen lokale Mails oder `.eml`-Ordner) → OCEL-Events mit Bezug zu Rechnungen | Code-Test mit erfundenen Mails |
+| WP7 | Konnektor Test-Postfach (IMAP gegen lokale Mails oder `.eml`-Ordner) → OCEL-Events mit Bezug zu Rechnungen | **Erledigt** in `packages/mail-connector/` (nur Standardbibliothek, Code-Test grün, Datei lädt in pm4py). Offen: Einbindung in den Graph aus WP3 |
 | WP8 | Einfache Weboberfläche: Graph, Kandidaten, Backtest | Lokal startbar, ein Klick zeigt den Durchstich |
 | WP9 | Task Mining „Zeig's mir“ mit OpenAdapt, nur opt-in, Vorlage für die Betriebsvereinbarung | erst nach dem MVP |
 

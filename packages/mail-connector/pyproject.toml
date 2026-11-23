@@ -1,0 +1,9 @@
+[project]
+name = "mail-connector"
+version = "0.1.0"
+description = "Test-Postfach (.eml oder IMAP, read-only) → OCEL 2.0 JSON"
+requires-python = ">=3.13"
+dependencies = []
+
+[tool.uv]
+package = false
