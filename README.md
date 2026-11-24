@@ -2,7 +2,7 @@
 
 Ein Claude-Code-Skill, der LLM-Agenten nach festem Ablauf baut, prüft und aus jedem Projekt lernt. Dazu ein zentrales Guardrails-Paket, ein Company Brain für Firmenwissen und vier damit gebaute Agenten.
 
-**Nächster Schritt:** Auf diesem Harness entsteht ein Werkzeug gegen den Wissensverlust im Handwerk. Der Meister filmt seine Arbeit mit dem Handy, ohne dabei etwas zu erklären. Danach stellt die KI ihm höchstens drei kurze Fragen, die er per Sprache beantwortet. Daraus entstehen Anleitungen und Job-Akten mit Material, die neue Leute auf der Baustelle per Sprache oder Foto abfragen. Es hilft auf der Baustelle und ist kein Bürotool; vorhandene Handwerker-Software wird angebunden. Plan: [`SPEC-handwerk-wissen.md`](SPEC-handwerk-wissen.md), Übergabe: [`HANDOFF.md`](HANDOFF.md).
+**Produkt:** Mit diesem Harness entsteht eyecraft, ein Werkzeug gegen den Wissensverlust im Handwerk. Es liegt im eigenen Repo (privat). Der Harness liefert dafür Guardrails, Company Brain und die Bauweise für Agenten. Was eyecraft hier braucht, steht in [`HANDOFF.md`](HANDOFF.md).
 
 Ohne Harness legt Claude bei jedem Agenten frei los: ohne feste Struktur, ohne Evals und oft mit veralteten APIs aus dem Gedächtnis. `build-agent` gibt dafür eine Checkliste vor. Erkenntnisse aus einem Projekt gehen nach Freigabe in ein Ledger und stehen dem nächsten Build zur Verfügung.
 
@@ -21,9 +21,8 @@ Die Dokumentation ist auf Deutsch. Hinweise für Coding-Agenten: [`AGENTS.md`](A
 | [`packages/agent-guardrails/`](packages/agent-guardrails/agent_guardrails/__init__.py) | Zentrales Paket für alle Agenten: Policy 0.3.0 (Injection, PII, Freigabeliste, Rate-Limit), Identität und Rechte, OpenTelemetry-Traces mit Event-Log-Export, Chatmodell über die Claude-CLI | Selbsttest + Guardrail-Evals grün, CI-Workflow |
 | [`test-finance-agent/`](test-finance-agent/RETRO.md) | Synthetisches ERP (SQLite, P2P-Event-Log), Recherche-Agent mit Kontext-Evals, Rechnungs-Workflow mit Node-Report, Memory, Mehrtages-Scaffold | erfundene Daten |
 | [`test-rag-agent/`](test-rag-agent/RETRO.md) | Agentic/Adaptive RAG über ein Company-Brain-Bundle mit Ausgang „Mensch“ | erfundene Dokumente |
-| [`SPEC-handwerk-wissen.md`](SPEC-handwerk-wissen.md) | Produkt: Handy-Video → Schritte → KI-Nachfragen → Anleitung, Job-Akte, Assistent auf der Baustelle | Entwurf, Phase A geplant |
 | [`packages/mail-connector/`](packages/mail-connector/mail_ocel.py) | Postfach (.eml oder IMAP, read-only) → OCEL 2.0, pseudonymisiert | Code-Test grün |
-| [`HANDOFF.md`](HANDOFF.md) | Übergabe an den nächsten Agenten: Stand, Entscheidungen, Reihenfolge | aktuell |
+| [`HANDOFF.md`](HANDOFF.md) | Übergabe: was das Produkt vom Harness braucht, Merge-Reihenfolge | aktuell |
 | [`SPEC-open-process-intelligence.md`](SPEC-open-process-intelligence.md) | Frühere Richtung: Kanäle → OCEL 2.0 → Prozess-Erkennung → Kandidaten → Agenten | ruht |
 | [`SPEC-firmen-agent.md`](SPEC-firmen-agent.md) | Agenten-Seite: lernt Firmenprozesse und verdient sich Autonomie (124 Anforderungen) | Entwurf |
 | [`ANALYSE-ki-vs-algorithmus.md`](ANALYSE-ki-vs-algorithmus.md) | Wo braucht das Produkt KI, wo reicht Code? Mit [Nachrechnung](ANALYSE-ki-vs-algorithmus-nachrechnung.py) | Analyse |
@@ -107,12 +106,7 @@ Firmendokumente einlesen: `cd company-brain && uv run python ingest.py <ordner> 
 
 ## Roadmap
 
-Produkt nach [`SPEC-handwerk-wissen.md`](SPEC-handwerk-wissen.md), Abschnitt 11. Lizenz und Name sind noch offen ([#18](https://github.com/Alextum207/agent-builder-harness/issues/18)). Bis dahin gibt es keine LICENSE-Datei, und es gilt „alle Rechte vorbehalten“.
-
-| Phase | Inhalt | Issues |
-|---|---|---|
-| A · [Kurs-Demo](https://github.com/Alextum207/agent-builder-harness/milestone/1) | Video → Schritte → Nachfragen → Job-Akte → Anleitung → Assistent, Demo im Browser | [#29](https://github.com/Alextum207/agent-builder-harness/issues/29), [#38](https://github.com/Alextum207/agent-builder-harness/issues/38), [#36](https://github.com/Alextum207/agent-builder-harness/issues/36), [#30](https://github.com/Alextum207/agent-builder-harness/issues/30), [#31](https://github.com/Alextum207/agent-builder-harness/issues/31), [#39](https://github.com/Alextum207/agent-builder-harness/issues/39) |
-| B · [Pilot](https://github.com/Alextum207/agent-builder-harness/milestone/2) | App für Android und iPhone, Datenschutz-Paket, Anbindung der Handwerker-Software, 4 Wochen mit einem SHK-Betrieb | [#34](https://github.com/Alextum207/agent-builder-harness/issues/34), [#40](https://github.com/Alextum207/agent-builder-harness/issues/40), [#37](https://github.com/Alextum207/agent-builder-harness/issues/37), [#41](https://github.com/Alextum207/agent-builder-harness/issues/41) |
+Die Produkt-Roadmap liegt im Repo eyecraft. Für den Harness gilt: PRs #17, #26 und #27 in dieser Reihenfolge mergen, danach Company Brain und RAG als wiederverwendbare Pakete bereitstellen, siehe [`HANDOFF.md`](HANDOFF.md). Es gibt noch keine LICENSE-Datei, bis dahin gilt „alle Rechte vorbehalten“.
 
 Harness-Arbeiten stehen als [GitHub-Issues](https://github.com/Alextum207/agent-builder-harness/issues), sortiert nach Labels `prio:P1` (jetzt), `prio:P2` (beim ersten echten Firmenprozess) und `prio:P3` (ab mehreren Agenten). Die Issues #1–#9 sind in PR #17 umgesetzt, die Folgearbeiten stehen in #10–#16. Grundlage ist der Abgleich mit Anthropic, OpenAI, Google ADK, LangChain, SAP und der Celonis-Fallstudie, siehe [`sources.md`](setup-entwurf/build-agent/references/sources.md).
 
