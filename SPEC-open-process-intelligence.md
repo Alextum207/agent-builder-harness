@@ -1,6 +1,6 @@
 # Spec: Offene Process-Intelligence-Plattform
 
-Status: Entwurf 2026-11-23 · Arbeitstitel, Name offen · baut auf `SPEC-firmen-agent.md` (Agenten-Seite) und dem fertigen Harness auf
+Status: **ruht seit 2026-11-24**, abgelöst durch das Produkt eyecraft (eigenes Repo, Spec `SPEC-handwerk-wissen.md`). Bleibt als Referenz für OCEL und die Agenten-Seite. Ursprünglich: Entwurf 2026-11-23 · Arbeitstitel, Name offen · baut auf `SPEC-firmen-agent.md` (Agenten-Seite) und dem fertigen Harness auf
 
 ## 1 Idee in einem Satz
 Ein Mittelständler verbindet einmal seine Kanäle. Die Plattform macht daraus einen Prozess-Graphen, zeigt, wo Arbeit hängt und was sich automatisieren lässt, und baut für den besten Kandidaten einen Agenten. Der Agent beweist sich erst im Backtest und im Schattenmodus, bevor er allein arbeitet. Alles ist Open Source und selbst betreibbar.

@@ -2,7 +2,7 @@
 
 Ein Claude-Code-Skill, der LLM-Agenten nach festem Ablauf baut, prüft und aus jedem Projekt lernt. Dazu ein zentrales Guardrails-Paket, ein Company Brain für Firmenwissen und vier damit gebaute Agenten.
 
-**Nächster Schritt:** Auf diesem Harness entsteht eine offene Process-Intelligence-Plattform für den Mittelstand, gedacht als Open-Source-Alternative zu kommerziellen Process-Mining-Suiten. Sie verbindet einmal alle Kanäle, erkennt daraus die Prozesse und zeigt Automatisierungs-Kandidaten. Für die Kandidaten baut sie Agenten, die sich Autonomie erst im Backtest gegen Menschen verdienen. Plan: [`SPEC-open-process-intelligence.md`](SPEC-open-process-intelligence.md), Übergabe: [`HANDOFF.md`](HANDOFF.md).
+**Produkt:** Mit diesem Harness entsteht eyecraft, ein Werkzeug gegen den Wissensverlust im Handwerk. Es liegt im eigenen Repo (privat). Der Harness liefert dafür Guardrails, Company Brain und die Bauweise für Agenten. Was eyecraft hier braucht, steht in [`HANDOFF.md`](HANDOFF.md).
 
 Ohne Harness legt Claude bei jedem Agenten frei los: ohne feste Struktur, ohne Evals und oft mit veralteten APIs aus dem Gedächtnis. `build-agent` gibt dafür eine Checkliste vor. Erkenntnisse aus einem Projekt gehen nach Freigabe in ein Ledger und stehen dem nächsten Build zur Verfügung.
 
@@ -21,8 +21,9 @@ Die Dokumentation ist auf Deutsch. Hinweise für Coding-Agenten: [`AGENTS.md`](A
 | [`packages/agent-guardrails/`](packages/agent-guardrails/agent_guardrails/__init__.py) | Zentrales Paket für alle Agenten: Policy 0.3.0 (Injection, PII, Freigabeliste, Rate-Limit), Identität und Rechte, OpenTelemetry-Traces mit Event-Log-Export, Chatmodell über die Claude-CLI | Selbsttest + Guardrail-Evals grün, CI-Workflow |
 | [`test-finance-agent/`](test-finance-agent/RETRO.md) | Synthetisches ERP (SQLite, P2P-Event-Log), Recherche-Agent mit Kontext-Evals, Rechnungs-Workflow mit Node-Report, Memory, Mehrtages-Scaffold | erfundene Daten |
 | [`test-rag-agent/`](test-rag-agent/RETRO.md) | Agentic/Adaptive RAG über ein Company-Brain-Bundle mit Ausgang „Mensch“ | erfundene Dokumente |
-| [`SPEC-open-process-intelligence.md`](SPEC-open-process-intelligence.md) | Plattform: Kanäle verbinden → OCEL 2.0 → Prozess-Erkennung (pm4py) → Kandidaten → Agenten → Backtest | Entwurf, MVP geplant |
-| [`HANDOFF.md`](HANDOFF.md) | Übergabe an den nächsten Agenten: Stand, offene Entscheidungen, Arbeitspakete | aktuell |
+| [`packages/mail-connector/`](packages/mail-connector/mail_ocel.py) | Postfach (.eml oder IMAP, read-only) → OCEL 2.0, pseudonymisiert | Code-Test grün |
+| [`HANDOFF.md`](HANDOFF.md) | Übergabe: was das Produkt vom Harness braucht, Merge-Reihenfolge | aktuell |
+| [`SPEC-open-process-intelligence.md`](SPEC-open-process-intelligence.md) | Frühere Richtung: Kanäle → OCEL 2.0 → Prozess-Erkennung → Kandidaten → Agenten | ruht |
 | [`SPEC-firmen-agent.md`](SPEC-firmen-agent.md) | Agenten-Seite: lernt Firmenprozesse und verdient sich Autonomie (124 Anforderungen) | Entwurf |
 | [`ANALYSE-ki-vs-algorithmus.md`](ANALYSE-ki-vs-algorithmus.md) | Wo braucht das Produkt KI, wo reicht Code? Mit [Nachrechnung](ANALYSE-ki-vs-algorithmus-nachrechnung.py) | Analyse |
 
@@ -99,22 +100,13 @@ Ohne API-Key, mit Claude-Abo: `MODEL=claude-cli:haiku`. Lokal mit Ollama: `MODEL
 - `test-finance-agent/test_memory.py`
 - `test-rag-agent/test_search.py`
 - `company-brain/test_ingest.py`
+- `packages/mail-connector/test_mail_ocel.py`
 
 Firmendokumente einlesen: `cd company-brain && uv run python ingest.py <ordner> <quellname>`, siehe [`AGENTS.md`](company-brain/AGENTS.md).
 
 ## Roadmap
 
-MVP der Plattform ([Spec](SPEC-open-process-intelligence.md), Abschnitt 4). Vorher entscheidet der Nutzer über Lizenz und Namen ([#18](https://github.com/Alextum207/agent-builder-harness/issues/18)). pm4py steht unter AGPL-3.0, Empfehlung für das Repo ist deshalb ebenfalls AGPL-3.0. Bis dahin gibt es keine LICENSE-Datei, und es gilt „alle Rechte vorbehalten“.
-
-| WP | Inhalt | Issue |
-|---|---|---|
-| WP2 | OCEL-2.0-Event-Speicher und Konverter aus dem Test-ERP | [#19](https://github.com/Alextum207/agent-builder-harness/issues/19) |
-| WP3 | Prozess-Erkennung mit pm4py: Graph, Varianten, Durchlaufzeiten | [#20](https://github.com/Alextum207/agent-builder-harness/issues/20) |
-| WP4 | Kandidaten-Score: Menge × Gleichförmigkeit × Risiko | [#21](https://github.com/Alextum207/agent-builder-harness/issues/21) |
-| WP5 | Agent für den Top-Kandidaten mit `build-agent` | [#22](https://github.com/Alextum207/agent-builder-harness/issues/22) |
-| WP6 | Backtest gegen menschliche Entscheidungen mit oberer Schranke | [#23](https://github.com/Alextum207/agent-builder-harness/issues/23) |
-| WP7 | Konnektor Test-Postfach → OCEL | [#24](https://github.com/Alextum207/agent-builder-harness/issues/24) |
-| WP8 | Einfache Weboberfläche für den Durchstich | [#25](https://github.com/Alextum207/agent-builder-harness/issues/25) |
+Die Produkt-Roadmap liegt im Repo eyecraft. Für den Harness gilt: PRs #17, #26 und #27 in dieser Reihenfolge mergen, danach Company Brain und RAG als wiederverwendbare Pakete bereitstellen, siehe [`HANDOFF.md`](HANDOFF.md). Es gibt noch keine LICENSE-Datei, bis dahin gilt „alle Rechte vorbehalten“.
 
 Harness-Arbeiten stehen als [GitHub-Issues](https://github.com/Alextum207/agent-builder-harness/issues), sortiert nach Labels `prio:P1` (jetzt), `prio:P2` (beim ersten echten Firmenprozess) und `prio:P3` (ab mehreren Agenten). Die Issues #1–#9 sind in PR #17 umgesetzt, die Folgearbeiten stehen in #10–#16. Grundlage ist der Abgleich mit Anthropic, OpenAI, Google ADK, LangChain, SAP und der Celonis-Fallstudie, siehe [`sources.md`](setup-entwurf/build-agent/references/sources.md).
 
