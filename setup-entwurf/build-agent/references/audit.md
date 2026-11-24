@@ -60,6 +60,9 @@
 - `run_length` passt zum echten Lauf (Schritte und Tokens im Log); bei `lang` Verdichtung vorhanden, bei `kurz` keine unnötige Middleware (context.md)
 - Keine rohen Großausgaben im Verlauf; Artefakte (Pfade, IDs) im State statt nur in einer Zusammenfassung
 - `autonomy_level` gesetzt und im Code durchgesetzt (Freigabeliste passt zur Stufe)
+- `identity` in `config.md`: jedes Tool steht in `TOOL_SCOPES`, keine Rechte darüber hinaus; das Zielsystem setzt sie zusätzlich durch (read-only-Rolle/-Verbindung)
+- Zentrales Guardrails-Paket eingebunden, Version in `config.md` = geladene Version (`packages/agent-guardrails/evals/check_consumers.py`)
+- Ein Trace pro Lauf mit Span pro Model-/Tool-Aufruf; Logs feldweise maskiert (deploy.md, security.md)
 
 ## Fix-Reihenfolge (Code vor Prompt)
 1. Tool-Pflichten und Freigaben im Code erzwingen.

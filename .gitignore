@@ -14,3 +14,6 @@ setup-entwurf/_quellen/
 .venv/
 __pycache__/
 *.pyc
+
+# Firmendaten des Company Brain
+company-brain/brain/

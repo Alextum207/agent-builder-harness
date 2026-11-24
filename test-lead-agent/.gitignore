@@ -2,3 +2,5 @@ workspace/
 logs/
 .env
 .venv/
+traces/
+evals/redteam/results.json

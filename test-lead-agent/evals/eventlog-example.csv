@@ -1,0 +1,8 @@
+case:concept:name,concept:name,time:timestamp,time:start,org:resource,status,tokens_in,tokens_out,cost_usd,trace_id
+06d0c43e,Modell entscheidet,2026-11-22T19:07:59.324+00:00,2026-11-22T19:07:54.662+00:00,lead-qualification,ok,2200,173,0.0,6cd7d066750d46a2a9d3d4d4f90993c7
+06d0c43e,Tool crm_company_lookup,2026-11-22T19:07:59.333+00:00,2026-11-22T19:07:59.332+00:00,lead-qualification,ok,,,,6cd7d066750d46a2a9d3d4d4f90993c7
+06d0c43e,Modell entscheidet,2026-11-22T19:08:03.583+00:00,2026-11-22T19:07:59.338+00:00,lead-qualification,ok,2432,153,0.0,6cd7d066750d46a2a9d3d4d4f90993c7
+06d0c43e,Tool crm_leads_set_score,2026-11-22T19:08:03.592+00:00,2026-11-22T19:08:03.589+00:00,lead-qualification,ok,,,,6cd7d066750d46a2a9d3d4d4f90993c7
+06d0c43e,Modell entscheidet,2026-11-22T19:08:15.868+00:00,2026-11-22T19:08:03.596+00:00,lead-qualification,ok,2760,615,0.0,6cd7d066750d46a2a9d3d4d4f90993c7
+06d0c43e,Modell entscheidet,2026-11-22T19:08:21.368+00:00,2026-11-22T19:08:15.881+00:00,lead-qualification,ok,3211,164,0.0,6cd7d066750d46a2a9d3d4d4f90993c7
+06d0c43e,Agent-Lauf,2026-11-22T19:08:21.373+00:00,2026-11-22T19:07:54.648+00:00,lead-qualification,ok,,,,6cd7d066750d46a2a9d3d4d4f90993c7

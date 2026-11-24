@@ -51,7 +51,7 @@ Nur `references/evals.md`.
 - Projekt hat schon eine Struktur: anpassen, keine Ordner doppeln.
 - Nutzer will TypeScript: Muster übertragen, Stack-Regel gilt dann nicht.
 - context7 nicht verfügbar: offizielle Doku per WebFetch.
-- Kein API-Key für Evals: Evals schreiben, Lauf als „nicht ausgeführt“ melden, nicht als bestanden.
+- Kein API-Key für Evals: Evals schreiben, Lauf als „nicht ausgeführt“ melden, nicht als bestanden. Ausweg mit Claude-Abo: `MODEL=claude-cli:haiku` über `agent_guardrails.claude_cli` (Text-Protokoll für Tools, im Report so kennzeichnen).
 
 ## Erfolgsmetrik
 - Alle Checklistenpunkte abgehakt (Deploy ggf. begründet ausgelassen), Evals ausgeführt und Ergebnis gezeigt.

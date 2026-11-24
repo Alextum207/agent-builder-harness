@@ -7,6 +7,7 @@ eval_budget_usd: 1
 log_retention_days: 30
 personal_data: ja    # Lead-E-Mails; im Test nur erfundene Daten
 kontext: lead-qualification
+guardrails: agent-guardrails 0.3.0   # zentrales Paket, packages/agent-guardrails
 muster: ReAct-Agent – ob ein Firmen-Lookup und eine Follow-up-Mail nötig sind, hängt vom Lead ab
 ---
 # Rolle

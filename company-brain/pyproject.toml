@@ -1,0 +1,9 @@
+[project]
+name = "company-brain"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "docling>=2.151.1",
+    "markitdown[docx,outlook,pdf,pptx,xlsx]>=0.1.9",
+    "truststore>=0.10.5",
+]

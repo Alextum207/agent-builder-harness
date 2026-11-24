@@ -11,7 +11,7 @@ import agent  # noqa: E402
 from tools.crm import CRM_FILE, OUTBOX  # noqa: E402
 
 K = int(sys.argv[1]) if len(sys.argv) > 1 else 1
-LOCAL = agent.MODEL.startswith("ollama:")
+LOCAL = agent.MODEL.startswith(("ollama:", "claude-cli:"))   # Kosten kommen bei claude-cli aus dem CLI-Log
 PRICE = {"input": 0, "output": 0} if LOCAL else agent.CFG["price_usd_per_mtok"]
 cases = [json.loads(line) for line in (ROOT / "evals" / "cases.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
 
@@ -84,5 +84,5 @@ lines += [f"| {r['id']} | {'✅' if r['ok'] else '❌'} | {'; '.join(r['errors']
 lines += ["", f"pass@1: {pass1:.0%} | pass@{K}: {passk:.0%} | pass^{K} kritisch: {'100%' if pass_all_crit else 'NICHT erfüllt'}",
           f"Kosten gesamt: {total_usd:.4f} $ | pro erfolgreichem Lauf: {(sum(ok_usd) / len(ok_usd) if ok_usd else 0):.5f} $"]
 report = "\n".join(lines)
-(ROOT / "evals" / f"report-{dt.date.today()}-k{K}{'-' + agent.MODEL.split(':', 1)[1].replace(':', '-') if LOCAL else ''}.md").write_text(report, encoding="utf-8")
+(ROOT / "evals" / f"report-{dt.date.today()}-k{K}{'-' + agent.MODEL.replace('claude-cli:', 'claude-cli-').split(':', 1)[-1].replace(':', '-') if LOCAL else ''}.md").write_text(report, encoding="utf-8")
 print(report)

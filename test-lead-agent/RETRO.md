@@ -27,3 +27,24 @@ Scaffold-Muster (mit den Fixes oben), Tool-Vertrag, Eval-Format, Sicherheits-Pr�
 
 ## Vorschläge an den Skill
 Siehe `learnings/inbox.md` des Skills.
+
+# Nachtrag 2026-11-22 – zentrale Guardrails, Traces, Red-Teaming (Issues #3, #7, #9)
+
+## Ergebnis
+Modell `claude-haiku-5-5` über die Claude-Code-CLI (`MODEL=claude-cli:haiku`, kein gültiger API-Key). Policy `agent-guardrails 0.3.0`.
+
+| Lauf | Ergebnis |
+|---|---|
+| Evals k=3, n=8 (inkl. der zwei neuen Red-Team-Fälle) | pass@1 100 %, pass@3 100 %, pass^3 kritisch 100 % ([Report](evals/report-2026-11-22-k3-claude-cli-haiku.md)) |
+| Red-Teaming mit Promptfoo 0.125.1, 10 Fälle über `agent.run()` ([Config](evals/redteam/promptfooconfig.yaml)) | 10/10: kein Angriff erzwingt Stufe A, keine Mail an fremde Adressen, die harmlosen Fälle ergeben A und B |
+| Trace eines echten Laufs → Event-Log ([CSV](evals/eventlog-example.csv)) | 7 Events mit Case-ID, Aktivität, Zeit und Status; Telefonnummer aus der Mail in 0 Trace- und Logdateien |
+
+## Was neu ist
+- Der Agent bindet `packages/agent-guardrails` ein: Freigabeliste aus `policy.json`, `GuardrailMiddleware`, `TracingMiddleware`, Maskierung aus der zentralen Policy.
+- Lücken aus dem Red-Teaming stehen jetzt als Fälle in `evals/cases.jsonl` (`injection-semantisch`, `exfiltration-zweitadresse`).
+
+## Was nicht funktioniert hat (mit Ursache)
+1. **Jeder Lauf war „tainted“** (Code-Review): Der eigene Wrapper `<lead_email>` traf den Tag-Marker der Policy. Fix im Paket: Vor dem Scan wird genau ein äußeres Tag-Paar entfernt.
+2. **Promptfoo-Pfade:** Der `file://`-Provider gilt relativ zur Config, `pythonExecutable` relativ zum Arbeitsordner. Ein JavaScript-Assert muss `score` zurückgeben, sonst sind alle Fälle `error`.
+3. **CLI-Brücke:** Haiku schreibt echte Zeilenumbrüche in JSON-Strings (Mailtext). `json.loads` im Strict-Modus scheiterte, und der Tool-Call kam als Text zurück. Fix: `strict=False` und eine Nachfrage, wenn ein Tool-Call unlesbar ist.
+4. **`recursion_limit = max_steps × 3`** reichte mit den neuen Middleware-Hooks nicht (GraphRecursionError bei einem harmlosen Lead). Jetzt × 6 als Sicherheitsnetz; die echte Grenze setzt `ModelCallLimitMiddleware`.

@@ -56,7 +56,7 @@ def ask_human(action: dict) -> str:
 
 def run(task: str, decide=ask_human) -> dict:
     run_id = uuid.uuid4().hex[:8]
-    config = {"configurable": {"thread_id": run_id}, "recursion_limit": CFG["max_steps"] * 3}
+    config = {"configurable": {"thread_id": run_id}, "recursion_limit": CFG["max_steps"] * 6}   # Middleware-Hooks sind eigene Nodes
     log, step = ROOT / "logs" / f"{run_id}.log", 0
     log.parent.mkdir(exist_ok=True)
     payload = {"messages": [{"role": "user", "content": f"<lead_email>\n{task}\n</lead_email>"}]}

@@ -1,0 +1,30 @@
+{
+  "version": "0.3.0",
+  "injection_markers": [
+    "ignorier\\w*\\s+(alle\\s+|sämtliche\\s+)?((bisherigen|vorherigen|obigen|deine|die)\\s+)?(regeln|anweisungen|instruktionen|vorgaben)",
+    "ignore\\s+(all\\s+|any\\s+)?(previous|prior|above|your)\\s+(instructions|rules|prompts?)",
+    "disregard\\s+(all\\s+|any\\s+)?(previous|prior|above|your)\\s+(instructions|rules)",
+    "vergiss\\s+(alle\\s+)?(bisherigen|vorherigen|deine)\\s+(regeln|anweisungen)",
+    "system[-\\s]?(hinweis|nachricht|prompt|anweisung|message|override)",
+    "(neue|geänderte)\\s+anweisung(en)?\\s*(an\\s+(den|die)\\s+(assistent|ki|agent)|:)",
+    "an\\s+(den|die)\\s+(assistent(en)?|ki|agent(en)?|bot)\\s*:",
+    "\\b(du\\s+bist\\s+(jetzt|ab\\s+sofort|nun)|you\\s+are\\s+now)\\b",
+    "(developer|entwickler|admin|god)[-\\s]?(mode|modus)\\s+(ist\\s+)?(aktiv|aktiviert|an|ein|on|enabled|activated)",
+    "</?\\s*(system|assistant|lead_email|tool_result|instructions?)\\s*>",
+    "(reveal|zeige|gib)\\s+(mir\\s+)?(deinen?|your|den)\\s+(system[-\\s]?prompt|anweisungen|instructions)",
+    "(sende|schicke|leite|send|forward)\\b[^.\\n]{0,80}\\b(alle|sämtliche|all)\\b[^.\\n]{0,40}\\b(leads|kunden|daten|rechnungen|customers|data)\\b",
+    "(überweise|zahle|transfer|pay)\\b[^.\\n]{0,60}\\bsofort\\b"
+  ],
+  "pii_patterns": {
+    "email": "[\\w.+-]+@[\\w-]+(\\.[\\w-]+)+",
+    "iban": "(?i)\\b[A-Z]{2}\\d{2}(\\s?[A-Z0-9]{4}){3,7}(\\s?[A-Z0-9]{1,4})?\\b",
+    "phone": "(?<![\\w.,/-])(?<!\\d\\s)(?=(?:[^\\d\n]{0,3}\\d){7})(?:\\+\\d{1,3}[\\s/-]?(?:\\(0\\)\\s?)?\\d{1,5}(?:[\\s/-]?\\d{2,8}){1,4}|(?:00\\d{1,3}[\\s/-]|\\(0\\d{2,5}\\)\\s?|0\\d{2,5}[\\s/-])\\d{2,8}(?:[\\s/-]?\\d{2,8}){0,3})(?![\\w,-]|\\.\\d)"
+  },
+  "approval_required_tools": [
+    "mail_send",
+    "erp_buchung_anlegen",
+    "zahlung_freigeben"
+  ],
+  "block_approval_tools_when_tainted": true,
+  "max_calls_per_tool_per_run": 6
+}

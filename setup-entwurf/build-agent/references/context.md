@@ -79,6 +79,7 @@ SummarizationMiddleware(model=<kleines Modell>, trigger=("fraction", 0.8), keep=
 - Aufgabenliste als JSON mit `"done": false`; der Agent darf nur dieses Feld ändern (Code prüft das).
 - Ein Arbeitspaket pro Sitzung, danach Commit oder Checkpoint (LangGraph-Persistence, Quelle: L3).
 - Zu Beginn jeder Sitzung ein kurzer Selbsttest, ob der letzte Stand noch funktioniert.
+Referenz: `test-finance-agent/multiday.py`. Ablauf `selbsttest → auswaehlen → arbeiten → abschliessen` als `StateGraph` mit `SqliteSaver` und `durability="sync"` (Default `async` kann den letzten Checkpoint bei Abbruch verlieren). Hat die letzte Sitzung offene Nodes (`get_state(...).next`), setzt die nächste mit `invoke(None, config)` fort statt neu zu arbeiten. Liegt ein Ergebnis vor, das Paket ist aber nicht abgehakt (Abbruch dazwischen), hakt der Selbsttest nur ab. `tasks.json` wird atomar geschrieben (`tmp` + `replace`). Test: `evals/run_multiday.py` (Sitzungen als eigene Prozesse, Abbruch in Sitzung 2). Dasselbe Muster trägt `build-agent` später headless über das Agent SDK: `progress.md` und `tasks.json` ersetzen den Menschen, der sich den Stand merkt.
 
 ## Memory und Subagenten
 **Memory nur bei Agenten über mehrere Sitzungen.** Gesprächsverlauf (State) ist kein Memory. Wenn Memory nötig ist:
@@ -86,7 +87,14 @@ SummarizationMiddleware(model=<kleines Modell>, trigger=("fraction", 0.8), keep=
 - Nutzer-Korrektur schlägt Agent-Behauptung; eigener Monolog des Agents wird nie zu Memory (audit.md).
 - Keine Personendaten ohne Zweck (security.md „DSGVO“).
 - Liegt Memory in Dateien: Pfade prüfen wie in security.md, Dateigröße begrenzen (Quelle: A6).
-Ausbau (Store, semantische Suche): Issue #5, noch kein Standard.
+
+Bau-Muster: `test-finance-agent/memory.py` auf dem LangGraph-Store (`InMemoryStore` im Test, `SqliteStore`/`PostgresStore` im Betrieb, Namespace pro Firma und Agent). Eintrag = Inhalt, Quelle, Datum, Ablaufdatum, Vertrauensstufe `nutzer > tool > agent`. Die Regeln stehen im Code:
+- **Die Quelle bestimmt der Code:** Das Modell muss beim Merken ein wörtliches Zitat als Beleg nennen. Steht es in einer Nutzernachricht → `nutzer`, in einem Tool-Ergebnis → `tool`, sonst → `agent` und abgelehnt.
+- Niedrigere Stufe überschreibt nie eine gültige höhere (Memory-Vergiftung aus Dokumenten scheitert); bei gleicher Stufe gewinnt die neuere Aussage.
+- Injection-Marker und Personendaten ohne Zweck werden abgelehnt; abgelaufene Einträge nie zurückgegeben.
+
+**Laden vorab oder per Tool (Quelle: G1):** vorab in den System-Prompt, solange das Memory klein ist (≲ 20 Einträge) und fast jede Aufgabe es braucht, oder wenn es sicherheitsrelevant ist (kleine Modelle rufen Tools nicht zuverlässig auf). Per Tool (`memory_suchen`), sobald es groß ist oder nur einzelne Aufgaben es brauchen. Semantische Suche (Store mit `index`) erst, wenn Themen-Schlüssel nicht mehr reichen.
+Evals: `test_memory.py` (Code, ohne Modell) und `evals/run_memory_evals.py` (vier Sitzungen: merken, korrigieren, vergiftete Rechnung, abfragen).
 
 **Subagenten nur bei breiten Aufgaben**, deren Teile unabhängig sind (Recherche über viele Quellen). Regeln (Quelle: A8):
 - Jeder Subagent bekommt Ziel, Ausgabeformat, erlaubte Tools und Abbruchgrenze.
@@ -103,4 +111,6 @@ In evals.md eingetragen:
 1. **Token-Druck:** Trigger künstlich niedrig setzen, damit die Verdichtung früh greift. Ein Fakt vom Anfang des Laufs ist danach noch korrekt verfügbar.
 2. **Vergifteter Kontext:** Ein frühes Tool-Ergebnis enthält einen falschen Wert, ein späteres korrigiert ihn. Die Ausgabe nutzt den korrigierten Wert.
 3. **Artefakte:** Nach der Verdichtung stimmt die Artefakt-Liste im State mit dem Log überein.
-Diese Fälle gehören in `evals/cases.jsonl` (Umsetzung im Runner: Issue #1).
+Diese Fälle gehören in `evals/cases.jsonl`. Referenz-Runner: `test-finance-agent/evals/run_evals.py` (Felder `trigger_tokens`, `keep_messages`, `compaction_mode` pro Fall; ein Fall, bei dem die Verdichtung nicht greift, ist ungültig, nicht bestanden).
+- `ClearToolUsesEdit` ändert nur die Anfrage ans Modell, nicht den State. Zum Messen die geleerten Ergebnisse pro Lauf zählen (`CountingContextEditing` in der Referenz).
+- Die Artefakt-Liste führt eine eigene Middleware im `before_model`-Hook, **vor** `SummarizationMiddleware` in der Liste, damit sie jeden Tool-Aufruf sieht, bevor er zusammengefasst wird.

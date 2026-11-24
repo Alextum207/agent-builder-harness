@@ -5,6 +5,7 @@ Nur wenn der Agent nicht nur lokal läuft (Kunde, Webhook, Zeitplan). Muster geg
 ## Inhalt
 - Bausteine
 - API mit Freigabe per Link
+- Traces und Event-Log
 - Fallen
 - Zeitplan, Alarm, Aufräumen
 - Abnahme
@@ -96,6 +97,19 @@ def approve(thread_id: str, bg: BackgroundTasks, sig: str = Form(),
     return {"ok": True}
 ```
 
+## Traces und Event-Log (Quelle: AWS1)
+OpenTelemetry statt LangSmith: anbieterneutral, in der EU selbst betreibbar (OTLP an Collector, Jaeger oder Langfuse), keine Laufdaten an einen US-SaaS.
+```python
+from agent_guardrails.tracing import TracingMiddleware, run_span, setup_tracing
+TRACER = setup_tracing(ROOT / "traces", CFG["log_retention_days"])        # löscht ältere Tagesdateien
+middleware=[TracingMiddleware(agent_id, PRICE, POLICY), ...]               # als erstes Element: umschließt alle anderen
+with run_span(TRACER, agent_id, run_id): agent.stream(...)
+```
+- Ein Trace pro Lauf, ein Span pro Model- und Tool-Aufruf: `gen_ai.*`-Attribute (Modell, Tokens), `cost.usd`, `latency.ms`, `tool.status`. Tool-Argumente maskiert und gekürzt.
+- `case.id` (= `thread_id`) steht an jedem Span, damit der Export nicht an Parent-Ketten hängt (LangGraph führt Nodes in Threads aus).
+- Event-Log: `uv run python -m agent_guardrails.tracing traces/ eventlog.csv` → Spalten `case:concept:name, concept:name, time:timestamp, org:resource, …` (XES-Namen, lädt in pm4py und Celonis). Dasselbe Format hat der P2P-Log des Test-ERP (`test-finance-agent/erp.py`), so landen Agent- und Menschen-Schritte im selben Prozessmodell.
+- Betrieb: `JsonlSpanExporter` durch `OTLPSpanExporter` an einen Collector in der EU ersetzen.
+
 ## Fallen
 - **Link-Scanner:** E-Mail- und Slack-Scanner rufen Links per GET auf. Deshalb löst GET nie eine Aktion aus, nur der POST-Button.
 - **Doppelte Freigabe:** Vor dem Resume prüfen, ob noch ein Interrupt offen ist (409 sonst).
@@ -106,6 +120,7 @@ def approve(thread_id: str, bg: BackgroundTasks, sig: str = Form(),
 
 ## Zeitplan, Alarm, Aufräumen
 - Zeitplan: externer Scheduler ruft `POST /run` mit API-Key auf. Kein eigener Scheduler im Agent.
+- Mehrtägige Läufe (`run_length: mehrtägig`): der Scheduler startet je Sitzung `multiday.py`; der Agent macht genau ein Paket und endet (context.md).
 - Logs: täglicher Job löscht `logs/*.log` älter als `log_retention_days`.
 - Checkpoints: alte Threads regelmäßig entfernen (wachsen sonst unbegrenzt) (Quelle: L3).
 - Health: `GET /health` gibt 200 zurück, damit die Plattform Ausfälle erkennt.
