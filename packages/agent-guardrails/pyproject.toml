@@ -1,7 +1,7 @@
 [project]
 name = "agent-guardrails"
 version = "0.3.0"
-description = "Zentrale Guardrails und Rechte fÃ¼r die Agenten des Harness"
+description = "Zentrale Guardrails und Rechte für die Agenten des Harness"
 requires-python = ">=3.13"
 dependencies = [
     "langchain>=1.4.5",
